@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  * Created by aleksandar.stanoevsk on 9/20/2016.
  */
-public class SMSFactory {
+public class SMSFactory implements SMSViewer {
     public void scheduleSMS(SQLiteDatabase db, ArrayList<Recipient> recipients, SMS message, String date) {
         int sms_id = Integer.MAX_VALUE;
         ArrayList<Integer> recipient_ids = new ArrayList<Integer>();
@@ -53,5 +53,23 @@ public class SMSFactory {
         }
 
 
+    }
+
+    @Override
+    public SMS viewSentSMS(Recipient r) {
+        SMS result = new SMS();
+        // Join tables using recipient and sms ids
+
+        return null;
+    }
+
+    @Override
+    public SMS viewSentSMS(Recipient r, Date d) {
+        return null;
+    }
+
+    @Override
+    public SMS viewSentSMS(Date d) {
+        return null;
     }
 }

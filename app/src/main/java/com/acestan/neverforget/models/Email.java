@@ -7,6 +7,7 @@ import java.util.Date;
  */
 public class Email {
 
+    private int _id;
     private String subject;
     private String body;
     private String date;
@@ -28,6 +29,13 @@ public class Email {
     }
 
 
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
 
     public String getSubject() {
         return subject;

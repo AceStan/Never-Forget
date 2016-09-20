@@ -5,7 +5,7 @@ package com.acestan.neverforget.models;
  */
 public class Recipient {
 
-
+    private int _id;
     private String mobile;
     private String eMail;
 
@@ -18,6 +18,13 @@ public class Recipient {
     public Recipient() {
     }
 
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
 
     public String getMobile() {
         return mobile;

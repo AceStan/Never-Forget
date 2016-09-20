@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        System.out.println("Main activity started !");
+        /*System.out.println("Main activity started !");
         DatabaseHandler db = new DatabaseHandler(this);
         SQLiteDatabase database = db.getWritableDatabase();
         SimpleDateFormat SimpleDate = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault());
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
             }while (d.moveToNext());
         }
-
+        */
 
 
     }

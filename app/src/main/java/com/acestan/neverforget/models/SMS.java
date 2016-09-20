@@ -7,6 +7,7 @@ import java.util.Date;
  */
 public class SMS {
 
+    private int _id;
     private String title;
     private String content;
     private String date;
@@ -26,6 +27,13 @@ public class SMS {
     public SMS() {
     }
 
+    public int get_id() {
+        return _id;
+    }
+
+    public void set_id(int _id) {
+        this._id = _id;
+    }
 
     public String getTitle() {
         return title;
