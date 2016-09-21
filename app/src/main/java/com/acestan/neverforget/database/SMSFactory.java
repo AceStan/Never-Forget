@@ -56,20 +56,66 @@ public class SMSFactory implements SMSViewer {
     }
 
     @Override
-    public SMS viewSentSMS(Recipient r) {
-        SMS result = new SMS();
+    public ArrayList<SMS> viewScheduledSMS(SQLiteDatabase db, Recipient r) {
+        ArrayList<SMS> result = new ArrayList<SMS>();
+        ArrayList<Integer> recipient_ids = new ArrayList<Integer>();
         // Join tables using recipient and sms ids
-
-        return null;
+        Cursor c = db.rawQuery("SELECT id FROM recipient WHERE mobile='" + r.getMobile()+"';", null);
+        if(c.moveToFirst()){
+            do{
+                recipient_ids.add(c.getInt(0));
+            }while(c.moveToNext());
+        }
+        Cursor res;
+        for(int i =0;i<recipient_ids.size();i++)
+        {
+            res = db.rawQuery("SELECT S.* FROM sms AS S,send_sms AS SS WHERE S.id = SS.sms_id AND SS.recipient_id='"+recipient_ids.get(i)+"';",null);
+            if(res.moveToFirst()){
+                do{
+                   result.add(new SMS(res.getString(1),res.getString(2),res.getString(3)));
+                }while(res.moveToNext());
+            }
+        }
+        return result;
     }
 
     @Override
-    public SMS viewSentSMS(Recipient r, Date d) {
-        return null;
+    public ArrayList<SMS> viewScheduledSMS(SQLiteDatabase db, Recipient recipient, String date) {
+        ArrayList<SMS> result = new ArrayList<SMS>();
+        ArrayList<Integer> recipient_ids = new ArrayList<Integer>();
+        // Join tables using recipient and sms ids
+        Cursor c = db.rawQuery("SELECT id FROM recipient WHERE mobile='" + recipient.getMobile()+"';", null);
+        if(c.moveToFirst()){
+            do{
+                recipient_ids.add(c.getInt(0));
+            }while(c.moveToNext());
+        }
+        Cursor res;
+        for(int i =0;i<recipient_ids.size();i++)
+        {
+            res = db.rawQuery("SELECT S.* FROM sms AS S,send_sms AS SS WHERE S.id = SS.sms_id AND S.date = '"+date+"' AND SS.recipient_id='"+recipient_ids.get(i)+"';",null);
+            if(res.moveToFirst()){
+                do{
+                    result.add(new SMS(res.getString(1),res.getString(2),res.getString(3)));
+                }while(res.moveToNext());
+            }
+        }
+        return result;
     }
 
     @Override
-    public SMS viewSentSMS(Date d) {
-        return null;
+    public ArrayList<SMS> viewScheduledSMS(SQLiteDatabase db, String d) {
+        ArrayList<SMS> result = new ArrayList<SMS>();
+
+        Cursor res;
+
+            res = db.rawQuery("SELECT * FROM sms WHERE date = '"+d+"';",null);
+            if(res.moveToFirst()){
+                do{
+                    result.add(new SMS(res.getString(1),res.getString(2),res.getString(3)));
+                }while(res.moveToNext());
+            }
+
+        return result;
     }
 }
