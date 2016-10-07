@@ -9,9 +9,9 @@ public class TableFactory {
     public void createSMS(SQLiteDatabase db) {
         System.out.println("Creating sms table ...");
         String sql = "CREATE TABLE sms (id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "title VARCHAR(30)," +
                 "content TEXT," +
-                "date TEXT);";
+                "date TEXT," +
+                "status VARCHAR (15));";// status tells if the sms is sent or scheduled
         try {
             db.execSQL(sql);
             System.out.println("Successfully created sms table !");
@@ -28,7 +28,8 @@ public class TableFactory {
         String sql = "CREATE TABLE email (id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "subject VARCHAR(30)," +
                 "body TEXT," +
-                "date DATETIME);";
+                "date DATETIME,"+
+                "status VARCHAR(15));";
         try {
             db.execSQL(sql);
             System.out.println("Successfuly created email table !");

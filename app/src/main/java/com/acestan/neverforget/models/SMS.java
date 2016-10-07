@@ -8,19 +8,17 @@ import java.util.Date;
 public class SMS {
 
     private int _id;
-    private String title;
     private String content;
     private String date;
 
-    public SMS(String title, String content, String date) {
+    public SMS(String content, String date) {
 
-        this.title = title;
         this.content = content;
         this.date = date;
     }
 
-    public SMS(String title, String content) { // Constructor without defined date
-        this.title = title;
+    public SMS( String content) { // Constructor without defined date
+
         this.content = content;
     }
 
@@ -33,14 +31,6 @@ public class SMS {
 
     public void set_id(int _id) {
         this._id = _id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getContent() {

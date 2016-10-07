@@ -9,8 +9,44 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.acestan.neverforget.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <Button
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="@string/send_sms"
+        android:id="@+id/sendSMS"
+        android:layout_above="@+id/scheduleSMS"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="64dp" />
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/send_e_mail"
+        android:id="@+id/sendEmail"
+        android:layout_alignTop="@+id/sendSMS"
+        android:layout_toRightOf="@+id/sendSMS"
+        android:layout_toEndOf="@+id/sendSMS"
+        android:layout_marginLeft="45dp"
+        android:layout_marginStart="20dp" />
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/schedule_sms"
+        android:id="@+id/scheduleSMS"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/sendEmail"
+        android:layout_toStartOf="@+id/sendEmail" />
+
+    <Button
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="@string/schedule_e_mail"
+        android:id="@+id/scheduleEmail"
+        android:layout_alignBottom="@+id/scheduleSMS"
+        android:layout_alignLeft="@+id/sendEmail"
+        android:layout_alignStart="@+id/sendEmail" />
 </RelativeLayout>

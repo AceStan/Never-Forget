@@ -1,13 +1,20 @@
 package com.acestan.neverforget.database;
 
+import android.Manifest;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.ResourceCursorAdapter;
+import android.telephony.SmsManager;
+import android.widget.Toast;
 
+import com.acestan.neverforget.R;
 import com.acestan.neverforget.models.Recipient;
 import com.acestan.neverforget.models.SMS;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 
 /**
  * Created by aleksandar.stanoevsk on 9/20/2016.
@@ -17,8 +24,8 @@ public class SMSFactory implements SMSViewer {
         int sms_id = Integer.MAX_VALUE;
         ArrayList<Integer> recipient_ids = new ArrayList<Integer>();
         System.out.println("Scheduling sms message ...");
-        String sql_sms = "INSERT INTO sms (title,content,date)" +
-                " VALUES('" + message.getTitle() + "', '" + message.getContent() + "', '" + date + "');";
+        String sql_sms = "INSERT INTO sms (content,date,status)" +
+                " VALUES('" + message.getContent() + "', '" + date + "','scheduled');";
         for (int i = 0; i < recipients.size(); i++) {
             String sql_recipient = "INSERT INTO recipient (mobile,email)" +
                     " VALUES('" + recipients.get(i).getMobile() + "', '" + recipients.get(i).geteMail() + "');";
@@ -55,25 +62,39 @@ public class SMSFactory implements SMSViewer {
 
     }
 
+    public void sendSMS(SQLiteDatabase db, ArrayList<Recipient> recipients, SMS message, String date) {
+        final String insertData =   "INSERT INTO sms(content,date,status) VALUES('" +
+                message.getContent()+"','"+message.getDate()+"' ,'sent')";
+        db.execSQL(insertData);
+
+
+    }
+
+    public void sendScheduledSMS(SQLiteDatabase db){
+        // THINKING ABOUT THE PROCESS !
+    }
+
+
+
+
     @Override
     public ArrayList<SMS> viewScheduledSMS(SQLiteDatabase db, Recipient r) {
         ArrayList<SMS> result = new ArrayList<SMS>();
         ArrayList<Integer> recipient_ids = new ArrayList<Integer>();
         // Join tables using recipient and sms ids
-        Cursor c = db.rawQuery("SELECT id FROM recipient WHERE mobile='" + r.getMobile()+"';", null);
-        if(c.moveToFirst()){
-            do{
+        Cursor c = db.rawQuery("SELECT id FROM recipient WHERE mobile='" + r.getMobile() + "';", null);
+        if (c.moveToFirst()) {
+            do {
                 recipient_ids.add(c.getInt(0));
-            }while(c.moveToNext());
+            } while (c.moveToNext());
         }
         Cursor res;
-        for(int i =0;i<recipient_ids.size();i++)
-        {
-            res = db.rawQuery("SELECT S.* FROM sms AS S,send_sms AS SS WHERE S.id = SS.sms_id AND SS.recipient_id='"+recipient_ids.get(i)+"';",null);
-            if(res.moveToFirst()){
-                do{
-                   result.add(new SMS(res.getString(1),res.getString(2),res.getString(3)));
-                }while(res.moveToNext());
+        for (int i = 0; i < recipient_ids.size(); i++) {
+            res = db.rawQuery("SELECT S.* FROM sms AS S,send_sms AS SS WHERE S.id = SS.sms_id AND S.status='scheduled' AND SS.recipient_id='" + recipient_ids.get(i) + "';", null);
+            if (res.moveToFirst()) {
+                do {
+                    result.add(new SMS(res.getString(1), res.getString(2)));
+                } while (res.moveToNext());
             }
         }
         return result;
@@ -84,20 +105,19 @@ public class SMSFactory implements SMSViewer {
         ArrayList<SMS> result = new ArrayList<SMS>();
         ArrayList<Integer> recipient_ids = new ArrayList<Integer>();
         // Join tables using recipient and sms ids
-        Cursor c = db.rawQuery("SELECT id FROM recipient WHERE mobile='" + recipient.getMobile()+"';", null);
-        if(c.moveToFirst()){
-            do{
+        Cursor c = db.rawQuery("SELECT id FROM recipient WHERE mobile='" + recipient.getMobile() + "';", null);
+        if (c.moveToFirst()) {
+            do {
                 recipient_ids.add(c.getInt(0));
-            }while(c.moveToNext());
+            } while (c.moveToNext());
         }
         Cursor res;
-        for(int i =0;i<recipient_ids.size();i++)
-        {
-            res = db.rawQuery("SELECT S.* FROM sms AS S,send_sms AS SS WHERE S.id = SS.sms_id AND S.date = '"+date+"' AND SS.recipient_id='"+recipient_ids.get(i)+"';",null);
-            if(res.moveToFirst()){
-                do{
-                    result.add(new SMS(res.getString(1),res.getString(2),res.getString(3)));
-                }while(res.moveToNext());
+        for (int i = 0; i < recipient_ids.size(); i++) {
+            res = db.rawQuery("SELECT S.* FROM sms AS S,send_sms AS SS WHERE S.id = SS.sms_id AND S.status='scheduled' AND S.date = '" + date + "' AND SS.recipient_id='" + recipient_ids.get(i) + "';", null);
+            if (res.moveToFirst()) {
+                do {
+                    result.add(new SMS(res.getString(1), res.getString(2)));
+                } while (res.moveToNext());
             }
         }
         return result;
@@ -109,13 +129,45 @@ public class SMSFactory implements SMSViewer {
 
         Cursor res;
 
-            res = db.rawQuery("SELECT * FROM sms WHERE date = '"+d+"';",null);
-            if(res.moveToFirst()){
-                do{
-                    result.add(new SMS(res.getString(1),res.getString(2),res.getString(3)));
-                }while(res.moveToNext());
-            }
+        res = db.rawQuery("SELECT * FROM sms WHERE date = '" + d + "' AND status='scheduled';", null);
+        if (res.moveToFirst()) {
+            do {
+                result.add(new SMS(res.getString(1), res.getString(2)));
+            } while (res.moveToNext());
+        }
+
+        return result;
+    }
+
+    @Override
+    public Hashtable<SMS,Recipient> viewSentSMS(SQLiteDatabase db) {
+        return null; // NEED TO BE IMPLEMENTED !!!
+    }
+
+    @Override
+    public Hashtable<SMS, Recipient> viewScheduledSMS(SQLiteDatabase db) {
+
+        Hashtable<SMS,Recipient> result = new Hashtable<SMS,Recipient>();
+        Cursor c = db.rawQuery("SELECT S.*,R.* FROM sms AS S,recipient AS R,send_sms AS SS WHERE " +
+                "S.id = SS.sms_id AND SS.recipient_id = R.id AND S.status = 'scheduled' ", null);
+        if(c.moveToFirst()){
+            do{
+                for(int i =0;i<c.getColumnCount();i++){
+                    SMS s = new SMS();
+                    Recipient r = new Recipient();
+                    s.set_id(c.getInt(0));
+                    s.setContent(c.getString(1));
+                    s.setDate(c.getString(2));
+                    r.set_id(c.getInt(4));
+                    r.setMobile(c.getString(5));
+                    r.seteMail(c.getString(6));
+                    result.put(s,r);
+                }
+
+            }while(c.moveToNext());
+        }
 
         return result;
     }
 }
+

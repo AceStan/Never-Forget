@@ -2,6 +2,7 @@ package com.acestan.neverforget;
 
 import android.Manifest;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.app.ActivityCompat;
@@ -9,8 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.acestan.neverforget.activities.SendSmsActivity;
 import com.acestan.neverforget.database.DatabaseHandler;
 import com.acestan.neverforget.database.EmailFactory;
 import com.acestan.neverforget.database.SMSFactory;
@@ -30,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        System.out.println("Main activity started !");
-        /*DatabaseHandler db = new DatabaseHandler(this);
+  /*      System.out.println("Main activity started !");
+        DatabaseHandler db = new DatabaseHandler(this);
         SQLiteDatabase database = db.getWritableDatabase();
         SimpleDateFormat SimpleDate = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault());
         Date date = new Date();
@@ -52,16 +56,16 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<SMS> result = new ArrayList<SMS>();
         ArrayList<Integer> recipient_ids = new ArrayList<Integer>();
         // Join tables using recipient and sms ids
-       Cursor c = database.rawQuery("SELECT id FROM recipient WHERE mobile='" + r.getMobile()+"';", null);
+       Cursor c = database.rawQuery("SELECT S.*,R.* FROM sms AS S,recipient AS R,send_sms AS SS WHERE " +
+               "S.id = SS.sms_id AND SS.recipient_id = R.id AND S.status = 'scheduled' ", null);
         if(c.moveToFirst()){
             do{
-                recipient_ids.add(c.getInt(0));
+                for(int i =0;i<c.getColumnCount();i++)
+                    System.out.println(c.getString(i));
             }while(c.moveToNext());
         }
-        for(int i =0;i<recipient_ids.size();i++){
-            System.out.println(recipient_ids.get(i));
-        }*/
-       /*
+
+       *//*
        SENDING SMS !!!
        ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.SEND_SMS},1);
         try {
@@ -74,6 +78,32 @@ public class MainActivity extends AppCompatActivity {
 
         }
 */
+        // HERE WE GO !!!
+        DatabaseHandler db = new DatabaseHandler(this);
+        SQLiteDatabase database = db.getWritableDatabase();
+        Cursor c = database.rawQuery("SELECT * FROM sms", null);
+
+
+        if(c.moveToFirst()){
+            do{
+                for(int i =0;i<c.getColumnCount();i++){
+                    System.out.print(i+":");
+                    System.out.println(c.getString(i));
+                }
+            }while(c.moveToNext());
+        }
+        Button sendSMS =  (Button)findViewById(R.id.sendSMS);
+        Button sendEmail =  (Button)findViewById(R.id.sendEmail);
+        Button scheduleSMS =  (Button)findViewById(R.id.scheduleSMS);
+        Button scheduleEmail =  (Button)findViewById(R.id.scheduleEmail);
+        sendSMS.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this,SendSmsActivity.class);
+                startActivity(i);
+            }
+        });
+
 
     }
 }

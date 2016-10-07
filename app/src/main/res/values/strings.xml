@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Never Forget</string>
+    <string name="send_sms">Send SMS</string>
+    <string name="send_e_mail">Send E-Mail</string>
+    <string name="schedule_sms">Schedule SMS</string>
+    <string name="schedule_e_mail">Schedule E-Mail</string>
+    <string name="title_activity_send_sms">SendSmsActivity</string>
+    <string name="to">To</string>
+    <string name="type_message">Type message</string>
+    <string name="new_message">New Message</string>
+
 </resources>
